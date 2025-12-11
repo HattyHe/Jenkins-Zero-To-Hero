@@ -70,21 +70,11 @@ pipeline {
             withCredentials([string(credentialsId: 'github', variable: 'GITHUB_TOKEN')]) {
                 sh """
                     set -x
-                    echo "=== Debugging Git Repository ==="
-                    pwd
-                    echo "=== Checking .git directory ==="
-                    ls -la .git || echo ".git directory not found"
-                    echo "=== Checking if .git is a directory ==="
-                    test -d .git && echo ".git is a directory" || echo ".git is NOT a directory"
-                    echo "=== Checking git version ==="
-                    git --version || echo "git command not found"
-                    echo "=== Checking git status ==="
-                    git status || echo "git status failed"
-                    echo "=== Checking .git/config ==="
-                    cat .git/config || echo ".git/config not found"
+                    echo "=== Fixing Git ownership issue ==="
+                    git config --global --add safe.directory \$(pwd)
                     echo "=== Setting git config ==="
-                    git config user.email "hatty.he@outlook.com" || echo "Failed to set user.email"
-                    git config user.name "HattyHe" || echo "Failed to set user.name"
+                    git config user.email "hatty.he@outlook.com"
+                    git config user.name "HattyHe"
                     echo "=== Updating deployment file ==="
                     sed -i "s/replaceImageTag/\${BUILD_NUMBER}/g" java-maven-sonar-argocd-helm-k8s/spring-boot-app-manifests/deployment.yml
                     echo "=== Git add ==="
